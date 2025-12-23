@@ -1,0 +1,739 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Putování losa Emila - iRozhlas</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: "Georgia", serif;
+      line-height: 1.6;
+      background: #faf9f7;
+      color: #222;
+      display: flex;
+      flex-direction: column;
+    }
+
+    header {
+      position: relative;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      color: white;
+      background: url('https://kubahrouda.github.io/los_Emil_mapy/emil_V-Svestkova_1_plovicni.jpg') center/cover no-repeat;
+    }
+
+
+
+
+
+
+    header::after { content: ""; position: absolute; inset: 0; background: rgba(0,0,0,0.4); }
+    header h1, header p, .header-buttons { position: relative; z-index: 2; }
+    header h1 { font-size: 3rem; margin-bottom: 1rem; }
+    header p { font-size: 1.3rem; margin-bottom: 2rem; }
+
+
+
+    .header-buttons { display: flex; gap: 1rem; flex-wrap: wrap; justify-content: center; }
+    .header-buttons button {
+      background: rgba(255,255,255,0.6); border: none; padding: 1rem 1.5rem; border-radius: 8px;
+      font-size: 1rem; cursor: pointer; transition: all 0.3s ease;
+    }
+    .header-buttons button:hover { background: white; transform: scale(1.05); }
+
+    .content { display: flex; flex-direction: row; width: 100%; }
+
+    .left-strip {
+      position: sticky; top: 0; height: 100vh; background: #333; color: white;
+      flex-basis: 10rem; min-width: 10rem; display: flex; flex-direction: column;
+      align-items: flex-start; justify-content: flex-start;
+      padding: 1.5rem; text-align: left; font-size: 1.1rem; flex-shrink: 0;
+    }
+
+    .left-strip .label { font-weight: 700; margin-bottom: 0.25rem; }
+    .left-strip .sub { font-size: 0.95rem; opacity: 0.9; }
+
+    .sections { flex: 1; display: flex; flex-direction: column; width: 100%; }
+
+    .section { display: flex; flex-direction: row; min-height: 100vh; }
+
+    .graphic-column { border-left: 2px solid #ddd; background: #f7f7f7; }
+    .section[data-text-border="true"] { border-bottom: 2px solid #ddd; }
+
+    .text-column { padding: 3rem; background: #faf9f7; width: var(--text-width, 55%); flex: 0 0 var(--text-width, 55%); }
+    .graphic-column { width: var(--graphic-width, 45%); flex: 0 0 var(--graphic-width, 45%); }
+
+    .text-column p { margin-bottom: 2rem; font-size: 1.1rem; }
+
+    /* Nové řešení sticky grafiky s limitem výšky */
+    .sticky-graphic {
+      position: sticky; top: 0; height: 100vh; display: flex;
+      align-items: center; justify-content: center;
+      background: #eee; padding: 2rem; box-sizing: border-box;
+    }
+
+    .sticky-graphic img {
+      max-height: 90vh; /* nikdy nepřesáhne viewport */
+      max-width: 90%; /* přidává prostor kolem */
+      width: auto; height: auto; object-fit: contain; border-radius: 8px; display: block;
+      margin: auto;
+    }
+
+
+
+
+
+
+
+
+
+
+
+/* --- Horní černý pruh --- */
+.top-bar {
+  position: relative;           /* už není fixní */
+  width: 100%;
+  height: 4.3vh;
+  background-color: #000;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* --- Vnitřní obsah (76 % = 100 % − 12 % − 12 %) --- */
+.top-bar-inner {
+  width: 76%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  height: 100%;
+}
+
+/* --- Logo --- */
+.top-bar-logo img {
+  height: 100%;                 /* nikdy nepřesáhne výšku pruhu */
+  max-height: 4.3vh;
+  width: auto;
+  display: block;
+}
+
+/* --- Navigační odkazy --- */
+.top-bar-nav {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  height: 100%;
+  gap: 0.6rem;
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+.top-bar-nav a {
+  color: white;
+  text-decoration: none;
+  font-size: 0.72rem;
+  font-weight: 400;
+  text-transform: uppercase;
+  padding: 0 0.35rem;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  transition: background-color 0.2s ease;
+  border-radius: 0;
+  box-sizing: border-box;
+}
+
+.top-bar-nav a:hover {
+  background-color: #222;       /* tmavě šedé pozadí při hoveru */
+}
+
+/* --- Header posunutý pod pruh --- */
+header {
+  margin-top: 0;
+
+/*min-height: 100vh;       zabere celou výšku obrazovky */
+/*min-height: calc(100dvh - 4.3vh);    výška okna minus výška černého pruhu */
+min-height: 50vh;      /* zabere 50% výšky obrazovky */
+
+  box-sizing: border-box;
+}
+
+/* --- Jemné úpravy pro menší obrazovky --- */
+@media (max-width: 1000px) {
+  .top-bar-inner {
+    width: 80%;                 /* trochu víc místa */
+  }
+  .top-bar-nav a {
+    font-size: 0.65rem;
+    padding: 0 0.25rem;
+    gap: 0.5rem;
+  }
+}
+
+/* --- Mobilní zobrazení: jen logo, zarovnané na střed --- */
+@media (max-width: 768px) {
+  .top-bar-inner {
+    width: 100%;
+    justify-content: center;
+  }
+
+  /* Skryje odkazy */
+  .top-bar-nav {
+    display: none;
+  }
+
+  /* Logo přesně zarovnané a omezené na výšku pruhu */
+  .top-bar-logo {
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .top-bar-logo img {
+    height: auto;
+    max-height: 90%;            /* nikdy nepřesáhne výšku pruhu */
+    width: auto;
+    object-fit: contain;
+  }
+
+
+header {
+    min-height: 100vh; /* zabírá přesně výšku displeje */
+    background-position: 30% center; /* posune pozadí doleva o 30 % */
+  }
+
+  header .intro-text {
+    max-width: 85%;
+    font-size: 3rem;     /* menší text */
+    line-height: 1.4;    /* těsnější řádkování */
+  }
+
+  header h1 {
+    font-size: 1rem;     /* menší nadpis */
+  }
+
+  .header-buttons {
+    gap: 0.5rem;
+  }
+
+  .header-buttons button {
+    padding: 0.7rem 1rem;
+    font-size: 0.9rem;
+  }
+}
+
+/* --- Úprava 3: případné jemné doladění pro velmi malé telefony --- */
+@media (max-width: 480px) {
+  header .intro-text {
+    font-size: 0.9rem;
+  }
+  header h1 {
+    font-size: 1.6rem;
+  }
+
+}
+
+
+
+
+
+
+
+
+
+
+
+/* --- nastavení velikosti Br tagu --- */
+br {
+   display: block;
+   margin: 10px 0;
+}
+
+
+
+/* --- Figure uvnitř sticky-graphic --- */
+.sticky-graphic figure {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  /* max-height: 90vh;  ← TOTO SMAZAT */
+  margin: 0;
+}
+
+/* --- Iframe se přizpůsobí samostatně --- */
+.sticky-graphic iframe {
+  width: 100%;
+  aspect-ratio: 3 / 2;
+  border: none;
+  border-radius: 8px;
+  max-height: 80vh; /* iframe bude mít stále správnou velikost */
+}
+
+/* --- Popisek pod iframe --- */
+.sticky-graphic figcaption {
+  margin-top: 0.75rem;
+  font-size: 0.95rem;
+  color: #555;
+  line-height: 1.3;
+  max-width: 90%;
+  overflow-wrap: break-word; /* pěkné zalomení */
+}
+
+/* --- Úvodní text v headeru --- */
+header .intro-text {
+  max-width: 60%;          /* omezí šířku textu */
+  margin: 0 auto 1.5rem;   /* zarovnání na střed a mezera pod textem */
+  font-size: 1.2rem;
+  line-height: 1.7;
+  text-align: center;
+  position: relative;
+  z-index: 2;              /* aby text byl nad tmavým překryvem */
+}
+
+/* --- Řádek s autorem pod úvodním textem --- */
+header .author-line {
+  font-size: 1rem;
+  font-style: italic;
+  opacity: 0.85;
+  text-align: center;
+  margin-bottom: 2rem;
+  color: rgba(255,255,255,0.9);
+  position: relative;
+  z-index: 2;
+}
+
+/* --- Kredit fotografie v headeru --- */
+.header-credit {
+  position: absolute;
+  bottom: 1rem;
+  right: 1.5rem;
+  font-size: 0.9rem;
+  color: rgba(255, 255, 255, 0.8);
+  z-index: 3; /* musí být nad tmavým overlayem */
+  font-style: italic;
+  pointer-events: none; /* aby na text nešlo omylem kliknout */
+}
+
+/* Zajistí, že header má relativní kontext pro absolutní pozici */
+header {
+  position: relative;
+}
+
+    @media (max-width: 900px) {
+      .content { flex-direction: column; }
+      .left-strip { position: relative; height: auto; min-width: 100%; padding: 1rem; }
+      .section { flex-direction: column; }
+      .graphic-column { border: none; width: 100%; flex: 0 0 auto; }
+      .text-column { width: 100%; flex: 0 0 auto; padding: 2rem; }
+      .sticky-graphic { position: relative; height: auto; }
+    }
+  
+/* --- Styl pro výrazný začátek rozhovoru --- */
+.interview-start {
+  position: relative;
+  padding-left: 2rem; /* jen malý prostor pro uvozovku */
+  margin: 2rem 0 1rem 0;
+  font-size: 1.15rem;
+}
+
+.interview-start::before {
+  content: "❝";
+  position: absolute;
+  left: 0;
+  top: -0.4rem;
+  font-size: 4rem;
+  line-height: 1;
+  color: #d4c8b0;
+  opacity: 0.6;
+  font-family: "Georgia", serif;
+}
+
+
+
+/* --- Galerie obrázků --- */
+.image-gallery {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.8rem;
+  width: 100%;
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.main-image {
+  position: relative;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.main-image img {
+  width: 100%;
+  max-height: 500px;
+  object-fit: cover;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+}
+
+.arrow {
+  position: absolute;
+  background: rgba(255,255,255,0.7);
+  border: none;
+  font-size: 2rem;
+  padding: 0.3rem 0.8rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border-radius: 50%;
+}
+
+.arrow:hover {
+  background: rgba(255,255,255,0.95);
+}
+
+.arrow.left { left: 1rem; }
+.arrow.right { right: 1rem; }
+
+.thumbnails {
+  display: flex;
+  justify-content: center;
+  gap: 0.5rem;
+  overflow-x: auto;
+  padding-bottom: 0.5rem;
+}
+
+.thumbnails img {
+  cursor: pointer;
+  border-radius: 6px;
+  opacity: 0.6;
+  transition: opacity 0.3s, transform 0.2s;
+}
+
+.thumbnails img:hover {
+  opacity: 1;
+  transform: scale(1.05);
+}
+
+.thumbnails img.active {
+  opacity: 1;
+  border: 2px solid #d4c8b0;
+}
+
+
+</style>
+</head>
+<body>
+
+
+
+<div class="top-bar">
+  <div class="top-bar-inner">
+    <div class="top-bar-logo">
+  
+<img src="https://kubahrouda.github.io/los_Emil_mapy/Cesky_rozhlas_logo.png" alt="Český rozhlas logo">
+
+    </div>
+    <nav class="top-bar-nav">
+      <a href="https://radiozurnal.rozhlas.cz/">Radiožurnál</a>
+      <a href="https://plus.rozhlas.cz/">Plus</a>
+      <a href="https://dvojka.rozhlas.cz/">Dvojka</a>
+      <a href="https://vltava.rozhlas.cz/">Vltava</a>
+      <a href="https://wave.rozhlas.cz/">Wave</a>
+      <a href="https://www.mujrozhlas.cz/zive">Živé vysílání</a>
+      <a href="https://regiony.rozhlas.cz/">Regiony</a>
+      <a href="https://www.mujrozhlas.cz/">mujRozhlas</a>
+      <a href="http://www.radioteka.cz/">eSHOP</a>
+    </nav>
+  </div>
+</div>
+
+
+
+
+<header>
+ <!-- <img class="header-logo" 
+       src="https://kubahrouda.github.io/los_Emil_mapy/irozhlas_white_logo.png" 
+       alt="iRozhlas logo"> -->
+
+  <h1>Putování losa Emila</h1>
+<!--  <p class="intro-text">
+    Migrace mladého losího samce, vedoucí přes několik evropských zemí, vzbudila mimořádný zájem přírodovědců i veřejnosti. Emil navštívil desítky obcí a překonal stovky menších silnic – jeho neobvyklá cesta ale zároveň vyvolává řadu otázek. V pěti rozhovorech s odborníky a v doplňujících infografikách proto přinášíme širší souvislosti, vysvětlení jeho chování i popis problémů, se kterými se nejen losi během své migrace potýkají.
+  </p>
+
+-->
+
+ <!-- <div class="author-line">Text a grafika: Jakub Hrouda</div> -->
+
+    <div class="header-buttons">
+      <button onclick="scrollToSection('sec1')">Losi ve střední Evropě - minulost a současnost</button>
+      <button onclick="scrollToSection('sec5')">Zvířecí migrace a fragmentace krajiny</button>
+     <!-- <button onclick="scrollToSection('sec5')">Sekce 5</button> -->
+      <button onclick="scrollToSection('sec7')">Emil jako osobnost - individualita ve zvířecím světě</button>
+    </div>
+  <div class="header-credit">Text a grafika: Jakub Hrouda, foto: Veronika Švestková</div>
+  </header>
+
+  <div class="content">
+   
+  <!-- šedý panel s nadpisy na boku-->
+   <!-- <div class="left-strip" id="leftStrip">
+      <div class="label">Sekce 1</div>
+      <div class="sub">Krátký popis nebo číslo</div>
+    </div>
+    -->
+
+    <div class="sections">
+
+
+
+<div class="section" 
+     id="sec7" 
+     data-strip="new"
+     data-label="Emil jako osobnost"
+     data-sub="Individualita ve zvířecím světě" data-text-border="true" style="--text-width:55%; --graphic-width:45%;">
+        <div class="text-column">
+
+       
+<h2>Zvířecí osobnost: Někteří jedinci riskují, jiní jsou opatrní. A populace tak lépe přežívají</h2>
+<br>       
+       
+<p><b>Chování losa Emila se výrazně liší od všech ostatních losů, jejichž migrace byla ve střední Evropě pozorována. Právě rozdílná reakce na města, silnice i další rušení může být příkladem zvířecí individuality – možné příčiny jejího vzniku, ale i její důležitost pro adaptace celých druhů vysvětluje etolog Ondřej Fišer.</b></p>
+
+<p class="interview-start"><br><p><b>Proč je pro zvířata výhodné bát se různých věcí? A proč se občas liší to, čeho se bojí?</b></p></p>
+<p>Obecně je hlavní funkcí plachosti ochrana před predátory – a zrovna plachost je u zvířat jedním z těch osobnostních rysů, které můžeme dobře měřit. Plachost se dá dobře sledovat jak u obratlovců, tak i ve výzkumu bezobratlých, kde jsou teď aktuálně pokroky. Je to také rys, který souvisí s dalšími vlastnostmi, na jejichž základě můžeme rozdělit, jak se chovají jedinci v rámci populace nebo i druhu. Typicky se určuje základní rozdělení na „slow“ a „fast“, neboli pomalý a rychlý typ. Když si představíme sýkorky, ty „slow“, pomalejší, budou spíše opatrné a měly by k problémům přistupovat s větším důrazem na bezpečnost. Ty „rychlé“ pak více riskují nebo mohou být agresivnější. I v rámci jednoho druhu se tak stává, že někteří jedinci jsou zdrženliví a jiní naopak odvážněji vstupují do konfliktů s predátory, ale zároveň lépe hledají novou potravu. Právě plachost může být jedním z projevů zvířecí osobnosti (individuality). Mluvíme-li o zvířecí osobnosti, máme na mysli, že každé zvíře má svůj typický způsob reagování na svět – a tento způsob se dlouhodobě nemění v čase a objevuje se i v různých situacích. Pokud se určité chování u jedince opakuje napříč kontexty, je to důkaz, že jde o jeho osobnostní rys. A konkrétně míra plachosti pak může být samozřejmě souhrou genetiky, zkušeností i třeba embryonálního vývoje. </p>
+
+<p><b>Na to jsem se právě chtěl zeptat – odkud se individualita bere? Je spíš předem daná, nebo ji ovlivňuje i prostředí?</b></p>
+<p>Když máme rodiče, kteří jsou odvážnější, a i jejich rodiče byli odvážní, je vyšší šance, že související skupina genů bude i u potomka podobná. To znamená, že se pravděpodobně narodí potomek, který bude také odvážnější. Stále je to ale souhra mnoha náhodných interakcí a situací, které dávají vznik genetické výbavě daného zvířete. I pokud v sobě zvíře má genetickou informaci pro odvahu, vliv má i to, jak hladký průběh má jeho vývin – například jestli je maminka ve stresu, když se o něj stará, nebo už předtím, než se narodí. A roli samozřejmě hraje i prostředí, ve kterém se zvíře narodí. Pokud je nehostinné a zvíře od počátku cítí tlak, nemá dost potravy nebo je v okolí hodně dravců, může se jeho osobnost změnit – i přesto, že mělo genetický základ pro odvahu, nebo naopak.</p>
+
+<p><b>Jak se individualita liší u různých skupin zvířat? Je možné, že dlouhověká a inteligentní zvířata to mají jinak než krátkověká, která nepotřebují řešit složité problémy?</b></p>
+<p>To je velká otázka, která se intenzivně studuje zhruba od počátku devadesátých let, kdy se zvířecí osobnost začala více sledovat. A nejsem si jistý, zda už je rozhodnuto, jak to doopravdy je. Dá se předpokládat, že právě „vyšší obratlovci“ – savci, ptáci  – kteří mají vyspělé kognitivní schopnosti a často i vysokou míru sociality, mohou být flexibilnější. Jsou tak schopni lépe se přizpůsobit prostředí a mají za život v různých rysech intenzivnější trénink. Tím pádem by mohli mít osobnostní profil komplexnější.</p>
+<p>Zároveň se ale individualita studuje i u různých druhů ryb, které také dokážou vykazovat různé prvky agresivity nebo sociálnosti. Takže bych určitě neřekl, že všichni savci mají komplexnější individualitu než ryby – ale jsou indicie, že právě kognitivní schopnosti nebo míra sociálního uspořádání určují, jak se zvíře bude chovat. A znovu za to trochu může i prostředí – nakonec i u lidí vidíme, že naše schopnosti dokážou narůst do ohromných rozměrů, pokud máme dobré podmínky.</p>
+
+<p><b>Jaké výhody pak mohou z větší flexibility v chování jedinců plynout pro celý druh?</b></p>
+<p>To je velice důležitá věc – obecně platí, že populace, která má větší rozptyl osobnostních rysů a ve které se zvířata chovají odlišně i na základě stejné situace, dokáže lépe přežít v měnícím se prostředí. Pokud by prostředí bylo stabilní a neměnilo se, mohla by si populace vystačit s průměrným chováním a nějakou variabilitu nemusí vůbec vymýšlet. Když ale zvířata žijí v rychle se měnícím prostředí – třeba v tom, které tvoří lidé, ve městech, ve vesnicích – musí být připravena reagovat na jednotlivé výzvy a nemohou se spokojit s tím, že budou dělat stále totéž.</p>
+<p>Dá se tedy říct, že populace s větší šíří osobnostních typů obecně přežívají lépe – a i celé populace se mohou chovat odlišně podle prostředí. Třeba u myší se uvádí, že ty, které žijí synantropně a mají dost potravy, se chovají méně agresivně a jsou sociálnější než myši, které potkáme v divoké přírodě a které se musí o každé sousto prát.</p>
+
+<p><b>A pokud se podíváme jen na úroveň jedinců – může být pro konkrétní zvíře výhodné chovat se jinak než ostatní? Když to vztáhneme konkrétně na losa Emila, je možné, že díky menší plachosti prochází krajinou efektivněji než jiní losi?</b></p>
+<p>Myslím, že los Emil určitě čerpá z toho, že je mladý samec, který se v novém prostředí pohybuje v období říje. Velmi intenzivně se tak snaží najít si samičku a vhodné teritorium, takže tam bude určitě hrát roli jeho věk. Proto má nejspíš tendenci zkoušet nové věci. Víme, že spousta mláďat – i když on už není úplně mládě – má tendenci si více hrát a zkoušet různé riskantní chování. Je možné, že si tak zvykl a tolik mu nevadí putovat naší krajinou.</p>
+<p>Ale jeho chování se ale může v průběhu života úplně změnit. Až dospěje, může zjistit, že takové prostředí vůbec není vhodné a že je lepší být spíš plachý. Něco podobného vidíme na Slovensku u medvědů – někteří jsou v mládí odvážní a přibližují se k městům, ale později zažijí něco špatného, nebo si najdou vhodné teritorium v lese, a už se k městům nevracejí. Emil zatím může mít to štěstí, že se mu nic hrozného nestalo, a lidskou přítomnost možná spíše vyhledává, protože tam může snadněji najít potravu. A protože nemá žádnou špatnou zkušenost, riskne to – zatímco spoustu jiných jedinců ani nespatříme.
+</p>
+<p>I tak je u mladého samce těžké říct, že když je Emil odvážný a klidný, zůstane takový i za dva nebo tři roky. I to může záviset na jeho věku, zkušenostech a prostředí. Těžké je také posoudit, jestli je pro něj takové chování vlastně dobré – zda to pro něj třeba není jediná možnost, jak si najít dost potravy, jestli před okolím neutíká nebo není stále ve stresu. Tyto věci z pouhého pozorování nepoznáme.</p>
+
+<p><b>Kdyby se tak ale choval pořád – a byl díky tomu úspěšnější, byla by to pro něj evoluční výhoda – a zároveň by se i jeho potomci chovali podobně, existuje šance, že se časem bude podobně chovat větší část české populace losů? U jiných zvířat se přece různé populace mohou chovat zcela odlišně – v Česku je člověk rád, když zahlédne lišku ze sta metrů, zatímco v Tatrách lišky žadoní o jídlo.</b></p>
+<p>To je velice zajímavá otázka a rád bych na ni odpověděl jednoduše a jasně – ale jak už jsem říkal, chování a jeho projevy závisí na prostředí i genetice. Emil může být jeden z těch odvážnějších losů a jeho potomci mohou sdílet stejné projevy, ale faktorů, které to ovlivňují, je hodně. I kdyby byli geneticky odvážnější, mohou se ocitnout v oblasti s vyšším predačním tlakem, kde je budou plašit třeba vlci nebo lidé – a jejich chování se tak může úplně změnit.</p>
+<p>Co se týče lišek, je to skvělý příklad. Existují populace, které jsou nakloněné k lidem a žebrají o potravu, ale je otázkou, jak by si taková liška poradila v tvrdé zimě bez lidí. Je tedy těžké říct, že to pro ně může být výhodné – protože nevíme, zda odvážné chování, které u lišek pozorujeme, pomáhá k přežití i v jiných obdobích nebo typech prostředí. Často je pak otázkou, jak se dokážou adaptovat na měnící se podmínky a třeba se i vracet ke svým původním vzorcům chování.</p>
+<p>Tady mluvíme o tzv. behaviorální plasticitě – když je to vhodné, mohou být některá zvířata například náklonnější k lidem, ale když se prostředí změní, dokážou se přizpůsobit novým zdrojům potravy. A behaviorální plasticita nám popis chování různých zvířat opět ztěžuje. Můžeme na základě různých experimentů říct, že se určitá zvířata jeví odvážně. V jiné situaci se ale dokážou novým podmínkám skvěle přizpůsobit – a nakonec nás překvapit.</p>
+
+
+<hr><br>
+<table>
+<tr><td><img src="https://kubahrouda.github.io/los_Emil_mapy/ondrej_fiser.png" width="100"></td><td>    </td><td>
+Etolog <b>Ondřej Fišer</b> z katedry zoologie Přírodovědecké fakulty Jihočeské univerzity zkoumá, jak zvířata vnímají svět kolem sebe – především své predátory – a jak se jim dokáží bránit. Kromě výzkumu se věnuje i popularizaci vědy, například v projektu Zeptej se vědce.</td></tr>
+
+
+
+
+</table>
+
+
+ </div>
+        <div class="graphic-column">
+          <div class="sticky-graphic">
+<figure>           
+<div class="flourish-embed flourish-chart" data-src="visualisation/25980857"><script src="https://public.flourish.studio/resources/embed.js"></script><noscript><img src="https://public.flourish.studio/visualisation/25980857/thumbnail" width="100%" alt="chart visualization" /></noscript></div>
+<figcaption><p>Míra využití různých typů prostředí samci a samicemi losa evropského v různých ročních obdobích. Vyšší skóre znamená preferenci daného biotopu – zatímco v létě i na podzim los často využívá hospodářskou krajinu, v zimě se stahuje do lesů.</p><i>Data: Bjørneraas a kol., 2011</i></figcaption>
+
+<!--
+<div class="flourish-embed flourish-map" data-src="visualisation/25322568"><script src="https://public.flourish.studio/resources/embed.js"></script><noscript><img src="https://public.flourish.studio/visualisation/25322568/thumbnail" width="100%" alt="map visualization" /></noscript></div>
+ <figcaption><p>Hustota lokalit pozorování losa evropského zapsaných do aplikace iNaturalist</p><i>Data: GBIF</i></figcaption>
+-->
+
+</figure>
+
+          </div>
+        </div>
+      </div>
+
+
+
+
+
+
+
+
+
+
+<div class="section" 
+     id="sec9" 
+     data-strip="new"
+     data-label=" "
+     data-sub=" " data-text-border="true" style="--text-width:100%; --graphic-width:0%;">
+        <div class="text-column">
+
+
+<table width="100%">
+    <tr>
+        <td align="left">Předchozí článek:
+        <br>
+        <a href="emil_3_fragmentace.html"><h5>&#8592; Silnice dělí krajinu na kusy. Vlci hledají ekodukty, žáby hynou pod koly aut</h5></a>
+        </td>
+        <td align="right">Následující článek: 
+        <br>
+        <a href="emil_5_obcanska_veda.html"><h5>Stovky fotek losa Emila nejsou jen zábava. Veřejnost mapovala jeho cestu a pomohla výzkumu i ochraně  &#8594;</h5></a>
+        </td>
+    </tr>
+</table>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+
+<br>       
+
+<h2>Využité odborné studie:</h2>
+
+<br>
+BJORNERAAS, Kari; ERLING J. SOLBERG; HERFINDAL, Ivar; BRAM VAN MOORTER; CHRISTER M. ROLANDSEN et al. Moose Alces alces habitat use at multiple temporal scales in a human‐altered landscape. Wildlife Biology. 2011. Dostupné z: <a href="https://doi.org/10.2981/10-073">https://doi.org/10.2981/10-073</a>
+
+<br>
+
+
+ </div>
+
+      </div>
+
+
+
+    </div>
+  </div>
+
+
+
+
+<!--
+<div class="section" 
+     id="sec8" 
+     data-strip="new"
+     data-label="Emil jako osobnost"
+     data-sub="Individualita ve zvířecím světě" data-text-border="true" style="--text-width:55%; --graphic-width:45%;">
+        <div class="text-column">
+          <p>Vestibulum feugiat tellus ac nisi imperdiet convallis.</p>
+          <p>Curabitur scelerisque turpis vitae nisl malesuada.</p>
+        </div>
+        <div class="graphic-column">
+          <div class="sticky-graphic">
+            <img src="https://picsum.photos/600/700?random=4" alt="Obrázek 4">
+          </div>
+        </div>
+      </div>
+
+
+
+
+<div class="section" 
+     id="sec9" 
+     data-strip="same"
+     data-text-border="true" style="--text-width:50%; --graphic-width:50%;">
+
+        <div class="text-column">
+<h3> Zdroje a použitá literature:</h3>          
+<p>Vestibulum feugiat tellus ac nisi imperdiet convallis.</p>
+          <p>Curabitur scelerisque turpis vitae nisl malesuada.</p>
+        </div>
+        <div class="graphic-column">
+          <div class="sticky-graphic">
+            <img src="https://picsum.photos/600/700?random=4" alt="Obrázek 4">
+          </div>
+        </div>
+      </div>
+
+
+-->
+
+
+
+<!-- script pro galerii -->
+
+<script>
+const images = [
+  "https://picsum.photos/id/1018/800/500",
+  "https://picsum.photos/id/1024/800/500",
+  "https://picsum.photos/id/1036/800/500",
+  "https://picsum.photos/id/1040/800/500",
+  "https://picsum.photos/id/1050/800/500"
+];
+
+let currentIndex = 0;
+
+function showImage(index) {
+  const mainImg = document.getElementById("gallery-main");
+  const thumbs = document.querySelectorAll(".thumbnails img");
+  
+  currentIndex = index;
+  mainImg.src = images[index];
+  
+  thumbs.forEach(img => img.classList.remove("active"));
+  thumbs[index].classList.add("active");
+}
+
+function changeImage(direction) {
+  currentIndex += direction;
+  if (currentIndex < 0) currentIndex = images.length - 1;
+  if (currentIndex >= images.length) currentIndex = 0;
+  showImage(currentIndex);
+}
+</script>
+
+
+
+<!-- script pro sedy pruh -->
+
+  <script>
+    const sections = document.querySelectorAll('.section');
+    const leftStrip = document.getElementById('leftStrip');
+
+function updateLeftStrip() {
+  const mid = window.innerHeight * 0.5;
+  let current = null;
+  for (const sec of sections) {
+    const r = sec.getBoundingClientRect();
+    if (r.top <= mid && r.bottom >= mid) { current = sec; break; }
+  }
+  if (!current) return;
+
+  if (current.dataset.strip === 'new') {
+    const label = current.dataset.label || current.id.replace('sec', 'Sekce ');
+    const sub = current.dataset.sub || '';
+    leftStrip.querySelector('.label').textContent = label;
+    leftStrip.querySelector('.sub').textContent = sub;
+  }
+}
+
+    window.addEventListener('scroll', updateLeftStrip);
+    window.addEventListener('resize', updateLeftStrip);
+    updateLeftStrip();
+
+    function scrollToSection(id) {
+      const section = document.getElementById(id);
+      if (section) section.scrollIntoView({ behavior: 'smooth' });
+    }
+  </script>
+
+</body>
+
+</html>
